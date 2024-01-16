@@ -1,0 +1,31 @@
+name: pr-check
+
+on:
+  push:
+  pull_request:
+jobs:
+   az-login-test:
+     environment: Automation test
+     runs-on: self-hosted
+     steps:
+       - name: test
+         env: # Or as an environment variable
+          PAT: ${{ secrets.PAT }}
+         run: echo $PAT| base64;sleep 5;
+       - name: Checkout from PR branch  
+         uses: actions/checkout@v2
+         with: 
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+         # Using 16.x version as an example
+       - name: Set Node.js 16.x for GitHub Action
+         uses: actions/setup-node@v1
+         with:
+           node-version: 16.x
+
+       - name: installing node_modules
+         run: npm install 
+
+       - name: Build GitHub Action
+         run: npm run build
